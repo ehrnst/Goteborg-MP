@@ -1,0 +1,84 @@
+<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--
+%%
+Description:
+  A CLASS and DISCOVERY using a PowerShell Script to create class instances
+  In this example we added a a couple additional class properties to demo that capability 
+Version: 1.1
+LastModified: 29-May-2017
+%%
+
+In this fragment you need to replace:
+  Community
+  Goteborg.City
+
+This fragment depends on references:
+  RequiredReference: Alias="System", ID="System.Library"
+  RequiredReference: Alias="Windows", ID="Microsoft.Windows.Library"
+--> 
+  <TypeDefinitions>
+    <EntityTypes>
+      <ClassTypes>
+        <ClassType ID="Community.Goteborg.City.Class" Base="System!System.LogicalEntity" Accessibility="Public" Abstract="false" Hosted="true" Singleton="false">
+          <Property ID="Country" Type="string"/>
+          <Property ID="Population" Type="int"/>
+		<!-- Chose logical entity here as a city doesent reside on a computer -->
+        </ClassType>	
+      </ClassTypes>
+    </EntityTypes>
+  </TypeDefinitions>
+  <Monitoring>
+    <Discoveries>
+      <Discovery ID="Community.Goteborg.City.Class.Discovery" Target="Windows!Microsoft.Windows.Server.OperatingSystem" Enabled="true" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+      <!-- We choose Microsoft.Windows.Server.OperatingSystem as the preferred target class to ensure this will run on all Windows Servers, but will not create duplicates on clusters -->
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+			<DiscoveryClass TypeID="Community.Goteborg.City.Class">
+            <Property PropertyID="Country"/>
+            <Property PropertyID="Population"/>
+          </DiscoveryClass>
+        </DiscoveryTypes>
+        <DataSource ID="PSDiscovery" TypeID="Windows!Microsoft.Windows.TimedPowerShell.DiscoveryProvider">
+          <IntervalSeconds>86400</IntervalSeconds>
+          <SyncTime />
+          <ScriptName>Community.Goteborg.City.Class.Discovery.ps1</ScriptName>
+          <ScriptBody>
+            $IncludeFileContent/Class and discoveries/Scripts/Goteborg.City.Class.Discovery.ps1$
+          </ScriptBody>
+          <Parameters>
+            <Parameter>
+              <Name>SourceID</Name>
+              <Value>$MPElement$</Value>
+            </Parameter>
+            <Parameter>
+              <Name>ManagedEntityID</Name>
+              <Value>$Target/Id$</Value>
+            </Parameter>
+          </Parameters>
+          <TimeoutSeconds>120</TimeoutSeconds>
+        </DataSource>
+      </Discovery>
+    </Discoveries>
+  </Monitoring>
+  <LanguagePacks>
+    <LanguagePack ID="ENU" IsDefault="true">
+      <DisplayStrings>
+        <!-- Classes -->	  
+        <DisplayString ElementID="Community.Goteborg.City.Class">
+          <Name>Community Goteborg.City Class</Name>
+        </DisplayString>
+        <DisplayString ElementID="Community.Goteborg.City.Class" SubElementID="Version">
+          <Name>Version</Name>
+        </DisplayString>
+        <DisplayString ElementID="Community.Goteborg.City.Class" SubElementID="Path">
+          <Name>Path</Name>
+        </DisplayString>
+        <!-- Discoveries -->		
+        <DisplayString ElementID="Community.Goteborg.City.Class.Discovery">
+          <Name>Community Goteborg.City Class Discovery</Name>
+        </DisplayString>		
+      </DisplayStrings>
+    </LanguagePack>
+  </LanguagePacks>
+</ManagementPackFragment>
+  

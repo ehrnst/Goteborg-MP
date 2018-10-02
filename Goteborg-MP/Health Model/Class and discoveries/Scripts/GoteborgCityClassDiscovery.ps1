@@ -26,13 +26,12 @@ $momapi.LogScriptEvent($ScriptName,1234,0, "Starting script.  Running as ($whoam
 #=================================================================================
 
 # get some data about göteborg
-$data = invoke-restmethod -Method Post -uri "http://statistikdatabas.goteborg.se/sq/76de58a4-da20-49f8-9ae6-37353c9fb0e5" -UseBasicParsing
-
-If ($data)
+$gtb = invoke-restmethod -uri "http://statistikdatabas.goteborg.se/sq/76de58a4-da20-49f8-9ae6-37353c9fb0e5"
+If ($gtb)
 {
 	# find current number of residents in GTB
 	$sum = 0
-	$values = ($data.dataset.value)
+	$values = ($gtb.dataset.value)
 	$values | Foreach { $sum += $_}
 	$sum 
 

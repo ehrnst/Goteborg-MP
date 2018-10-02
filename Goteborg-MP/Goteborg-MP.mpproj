@@ -3,9 +3,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <ProjectGuid>{9ec805db-4185-49db-93ce-2ed5a9497f75}</ProjectGuid>
     <RootNamespace>Goteborg_MP</RootNamespace>
-    <Name>Goteborg-MP</Name>
+    <Name>Goteborg City Demo</Name>
     <ManagementPackName>Goteborg_MP</ManagementPackName>
-    <Version>1.0.0.0</Version>
+    <Version>1.0.0.50</Version>
     <MpFrameworkVersion>v7.0.3</MpFrameworkVersion>
     <MpFrameworkProfile>OM</MpFrameworkProfile>
     <ProductVersion>1.1.0.0</ProductVersion>
@@ -13,10 +13,10 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Debug\</OutputPath>
-    <GenerateSealed>false</GenerateSealed>
+    <GenerateSealed>False</GenerateSealed>
     <Company>MyCompany</Company>
     <Copyright>Copyright (c) MyCompany. All rights reserved.</Copyright>
-    <DelaySigning>false</DelaySigning>
+    <DelaySigning>False</DelaySigning>
     <AssemblyOriginatorKeyFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
@@ -29,6 +29,16 @@
     <AssemblyOriginatorKeyFile />
   </PropertyGroup>
   <ItemGroup>
+    <ManagementPackReference Include="Microsoft.SystemCenter.DataWarehouse.Library">
+      <HintPath>\\distr\Software\Microsoft\SystemCenter2016\SCOM\SC 2016 RTM SCOM\ManagementPacks\Microsoft.SystemCenter.DataWarehouse.Library.mp</HintPath>
+      <Alias>MSDL</Alias>
+      <MinVersion>7.2.11719.0</MinVersion>
+    </ManagementPackReference>
+    <ManagementPackReference Include="Microsoft.SystemCenter.InstanceGroup.Library">
+      <HintPath>\\distr\Software\Microsoft\SystemCenter2016\SCOM\SC 2016 RTM SCOM\ManagementPacks\Microsoft.SystemCenter.InstanceGroup.Library.mp</HintPath>
+      <Alias>MSIL</Alias>
+      <MinVersion>7.5.8501.0</MinVersion>
+    </ManagementPackReference>
     <ManagementPackReference Include="Microsoft.SystemCenter.Library">
       <Alias>SC</Alias>
       <PackageToBundle>false</PackageToBundle>
@@ -49,20 +59,50 @@
       <Alias>Visualization</Alias>
       <PackageToBundle>false</PackageToBundle>
     </ManagementPackReference>
+    <ManagementPackReference Include="System.Performance.Library">
+      <HintPath>\\distr\Software\Microsoft\SystemCenter2016\SCOM\SC 2016 RTM SCOM\ManagementPacks\System.Performance.Library.mp</HintPath>
+      <Alias>Perf</Alias>
+      <MinVersion>7.0.8437.0</MinVersion>
+    </ManagementPackReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Health Model" />
     <Folder Include="Health Model\Class and discoveries" />
     <Folder Include="Health Model\Class and discoveries\Scripts" />
+    <Folder Include="Health Model\Rules and monitors\Scripts" />
+    <Folder Include="Health Model\Secure Reference" />
+    <Folder Include="Health Model\Rules and monitors" />
     <Folder Include="Service Model" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Health Model\Class and discoveries\Goteborg.City.Class.Discovery.mpx">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Health Model\Rules and monitors\NOX-rules-monitor.mpx">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Health Model\Rules and monitors\RainFall-rule-monitor.mpx">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Health Model\Rules and monitors\Temperature-rule-monitor.mpx">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Health Model\Rules and monitors\Humid-rule-monitor.mpx">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Health Model\Rules and monitors\Wind-rule-monitormpx.mpx">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Health Model\Secure Reference\gtbAppID.mpx">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ManagementPack.mpx">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Health Model\Class and discoveries\Scripts\Goteborg.City.Class.Discovery.ps1" />
+    <EmbeddedResource Include="Health Model\Class and discoveries\Scripts\GoteborgCityClassDiscovery.ps1" />
+    <EmbeddedResource Include="Health Model\Rules and monitors\Scripts\CommunityGoteborgCityWeather.ps1" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VSAC\Microsoft.SystemCenter.OperationsManager.targets" />
 </Project>

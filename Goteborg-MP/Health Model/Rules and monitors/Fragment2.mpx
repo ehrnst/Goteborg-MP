@@ -1,0 +1,138 @@
+﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <!--
+%%
+@@Author=Kevin Holman@@  
+-->
+  <TypeDefinitions>
+    <ModuleTypes>
+      <DataSourceModuleType ID="community.GoteborgCity.Weather.Script.Perf.Datasource" Accessibility="Internal" Batching="false">
+        <Configuration>
+          <xsd:element minOccurs="1" type="xsd:integer" name="IntervalSeconds" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element minOccurs="0" type="xsd:string" name="SyncTime" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element minOccurs="1" type="xsd:integer" name="TimeoutSeconds" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element type="xsd:string" name="APPID" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+        </Configuration>
+        <OverrideableParameters>
+          <OverrideableParameter ID="IntervalSeconds" Selector="$Config/IntervalSeconds$" ParameterType="int" />
+          <OverrideableParameter ID="SyncTime" Selector="$Config/SyncTime$" ParameterType="string" />
+          <OverrideableParameter ID="TimeoutSeconds" Selector="$Config/TimeoutSeconds$" ParameterType="int" />
+        </OverrideableParameters>
+        <ModuleImplementation Isolation="Any">
+          <Composite>
+            <MemberModules>
+              <DataSource ID="Scheduler" TypeID="System!System.Scheduler">
+                <Scheduler>
+                  <SimpleReccuringSchedule>
+                    <Interval Unit="Seconds">$Config/IntervalSeconds$</Interval>
+                    <SyncTime>$Config/SyncTime$</SyncTime>
+                  </SimpleReccuringSchedule>
+                  <ExcludeDates />
+                </Scheduler>
+              </DataSource>
+              <ProbeAction ID="PA" TypeID="Windows!Microsoft.Windows.PowerShellPropertyBagTriggerOnlyProbe">
+                <ScriptName>community.GoteborgCity.Weather.Script.Perf.Datasource.ps1</ScriptName>
+                <ScriptBody>
+                  $IncludeFileContent/Health Model/Rules/Scripts/CommunityGoteborgCityWeather.ps1$
+                </ScriptBody>
+                <Parameters>
+                  <Parameter>
+                    <Name>APPID</Name>
+                    <Value>$RunAs[Name="Community.Goteborg.OpenData.RunAsProfile"]/Password$</Value>
+                  </Parameter>
+                </Parameters>
+                <TimeoutSeconds>$Config/TimeoutSeconds$</TimeoutSeconds>
+              </ProbeAction>
+              <ConditionDetection TypeID="Perf!System.Performance.DataGenericMapper" ID="Mapper1">
+                <ObjectName>Weather</ObjectName>
+                <CounterName>$Data/Property[@Name='Counter']$</CounterName>
+                <InstanceName>$Target/Property[Type="System!System.Entity"]/DisplayName$</InstanceName>
+                <Value>$Data/Property[@Name='Value']$</Value>
+              </ConditionDetection>
+            </MemberModules>
+            <Composition>
+              <Node ID="Mapper1">
+                <Node ID="Scheduler" />
+              </Node>
+            </Composition>
+          </Composite>
+        </ModuleImplementation>
+        <OutputType>Perf!System.Performance.Data</OutputType>
+
+      </DataSourceModuleType>
+    </ModuleTypes>
+  </TypeDefinitions>
+  <Monitoring>
+    <Rules>
+      <Rule ID="community.GoteborgCity.Weather.Script.Perf.Rule" Enabled="true" Target="Community.Goteborg.City.Class" ConfirmDelivery="false" Remotable="true" Priority="Normal" DiscardLevel="100">
+        <Category>PerformanceCollection</Category>
+        <DataSources>
+          <DataSource ID="DS" TypeID="community.GoteborgCity.Weather.Script.Perf.Datasource">
+            <IntervalSeconds>120</IntervalSeconds>
+            <SyncTime></SyncTime>
+            <TimeoutSeconds>30</TimeoutSeconds>
+            <APPID>$Config/APPID$</APPID>
+          </DataSource>
+        </DataSources>
+        <ConditionDetection ID="Filter" TypeID="System!System.ExpressionFilter">
+          <Expression>
+            <SimpleExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">Counter</XPathQuery>
+              </ValueExpression>
+              <Operator>Equal</Operator>
+              <ValueExpression>
+                <Value Type="String">Temperature</Value>
+              </ValueExpression>
+            </SimpleExpression>
+          </Expression>
+        </ConditionDetection>
+        <WriteActions>
+          <WriteAction ID="WriteToDB" TypeID="SC!Microsoft.SystemCenter.CollectPerformanceData" />
+          <!-- Can be optional - collect this data to the Operations Database.  -->
+          <WriteAction ID="WriteToDW" TypeID="MSDL!Microsoft.SystemCenter.DataWarehouse.PublishPerformanceData" />
+          <!-- Can be optional - collect this data to the Data Warehouse Database -->
+        </WriteActions>
+      </Rule>
+      <Rule ID="community.GoteborgCity.Humindity.Script.Perf.Rule" Enabled="true" Target="Community.Goteborg.City.Class" ConfirmDelivery="false" Remotable="true" Priority="Normal" DiscardLevel="100">
+        <Category>PerformanceCollection</Category>
+        <DataSources>
+          <DataSource ID="DS" TypeID="community.GoteborgCity.Weather.Script.Perf.Datasource">
+            <IntervalSeconds>120</IntervalSeconds>
+            <SyncTime></SyncTime>
+            <TimeoutSeconds>30</TimeoutSeconds>
+            <APPID>$Config/APPID$</APPID>
+          </DataSource>
+        </DataSources>
+        <ConditionDetection ID="Filter" TypeID="System!System.ExpressionFilter">
+          <Expression>
+            <SimpleExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">Counter</XPathQuery>
+              </ValueExpression>
+              <Operator>Equal</Operator>
+              <ValueExpression>
+                <Value Type="String">Humidity</Value>
+              </ValueExpression>
+            </SimpleExpression>
+          </Expression>
+        </ConditionDetection>
+        <WriteActions>
+          <WriteAction ID="WriteToDB" TypeID="SC!Microsoft.SystemCenter.CollectPerformanceData" />
+          <!-- Can be optional - collect this data to the Operations Database.  -->
+          <WriteAction ID="WriteToDW" TypeID="MSDL!Microsoft.SystemCenter.DataWarehouse.PublishPerformanceData" />
+          <!-- Can be optional - collect this data to the Data Warehouse Database -->
+        </WriteActions>
+      </Rule>
+    </Rules>
+  </Monitoring>
+  <LanguagePacks>
+    <LanguagePack ID="ENU" IsDefault="true">
+      <DisplayStrings>
+        <DisplayString ElementID="community.GoteborgCity.Weather.Script.Perf.Rule">
+          <Name>community GoteborgCity Weather Script Performance Collection Rule</Name>
+          <Description></Description>
+        </DisplayString>
+      </DisplayStrings>
+    </LanguagePack>
+  </LanguagePacks>
+</ManagementPackFragment>

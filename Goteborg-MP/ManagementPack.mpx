@@ -1,0 +1,12 @@
+﻿<ManagementPackFragment SchemaVersion="2.0" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <LanguagePacks>
+    <LanguagePack ID="ENU" IsDefault="true">
+      <DisplayStrings>
+        <DisplayString ElementID="Goteborg_MP">
+          <Name>Goteborg Demo MP</Name>
+          <Description>Management pack monitoring Goteborg city with data from data.goteborg.se - used to demonstrate the extensibility of SCOM in a hybrid scenario</Description>
+        </DisplayString>
+      </DisplayStrings>
+    </LanguagePack>
+  </LanguagePacks>
+</ManagementPackFragment>
